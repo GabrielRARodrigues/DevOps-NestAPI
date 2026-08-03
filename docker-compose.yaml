@@ -1,0 +1,34 @@
+services:
+  mysql:
+    image: mysql:9
+    container_name: mysql
+    volumes:
+      - db:/var/lib/mysql
+    ports: 
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root 
+      - MYSQL_DATABASE=devops-db 
+      - MYSQL_USER=admin  
+      - MYSQL_PASSWORD=root
+    networks:
+      - first-network  
+
+  devops-nest-api:
+    build:
+      context: .
+    container_name: devops-nest-api
+    ports:
+      - 3001:3000
+    depends_on:
+      - mysql
+    networks:
+      - first-network
+
+networks:
+  first-network:
+    driver: bridge
+
+volumes:
+  db:
+  
