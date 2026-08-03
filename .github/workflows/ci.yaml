@@ -9,15 +9,18 @@ jobs:
   build:
     name: 'Build and Push'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [lts/*, latest, 24.15]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
 
-      - name: Setup Node.js environment
+      - name: Setup Node.js environment | ${{ matrix.node }}
         uses: actions/setup-node@v7.0.0
         with:
-          node-version: 24.15
+          node-version: ${{ matrix.node }}
           cache: 'npm'
       - run: npm i
       - run: npm run test 
