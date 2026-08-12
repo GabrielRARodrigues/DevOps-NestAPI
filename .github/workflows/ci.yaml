@@ -24,3 +24,6 @@ jobs:
           cache: 'npm'
       - run: npm i
       - run: npm run test 
+
+      - name: Build docker image
+        run: docker build -t gabrielrarodrigues/devops-nest-api:latest .
