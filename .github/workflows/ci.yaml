@@ -24,7 +24,12 @@ jobs:
           cache: 'npm'
       - run: npm i
       - run: npm run test
-      
+
+      - name: Login into container registry
+        uses: docker/login-action@v4.6.0
+        with:
+          username: ${{vars.DOCKERHUB_USERNAME}}  
+          password: ${{secrets.DOCKERHUB_TOKEN}}  
       - name: Get commit tag 
         id: get_tag    
         run: |
@@ -33,3 +38,6 @@ jobs:
 
       - name: Build docker image
         run: docker build -t gabrielrarodrigues/devops-nest-api:${{steps.get_tag.outputs.sha}} .
+
+      - name: Push docker image
+        run: docker push gabrielrarodrigues/devops-nest-api:${{steps.get_tag.outputs.sha}}
