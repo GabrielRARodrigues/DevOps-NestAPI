@@ -9,18 +9,20 @@ jobs:
   build:
     name: 'Build and Push'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [lts/*, latest, 24.15]
+    # strategy:
+    #   matrix:
+    #     node: [lts/*, latest, 24.15]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
 
-      - name: Setup Node.js environment | ${{ matrix.node }}
+      # - name: Setup Node.js environment | ${{ matrix.node }}
+      - name: Setup Node.js environment
         uses: actions/setup-node@v7.0.0
         with:
-          node-version: ${{ matrix.node }}
+          # node-version: ${{ matrix.node }}
+          node-version: 24.15
           cache: 'npm'
       - run: npm i
       - run: npm run test
@@ -36,8 +38,14 @@ jobs:
           SHA=$(echo $GITHUB_SHA | head -c7)
           echo "sha=$SHA" >> $GITHUB_OUTPUT
 
-      - name: Build docker image
-        run: docker build -t gabrielrarodrigues/devops-nest-api:${{steps.get_tag.outputs.sha}} .
+      # - name: Build docker image
+      #   run: docker build -t gabrielrarodrigues/devops-nest-api:${{steps.get_tag.outputs.sha}} .
 
-      - name: Push docker image
-        run: docker push gabrielrarodrigues/devops-nest-api:${{steps.get_tag.outputs.sha}}
+      # - name: Push docker image
+      #   run: docker push gabrielrarodrigues/devops-nest-api:${{steps.get_tag.outputs.sha}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v7.3.0
+        with:
+          push: true
+          tags: gabrielrarodrigues/devops-nest-api:${{steps.get_tag.outputs.sha}},gabrielrarodrigues/devops-nest-api:latest
