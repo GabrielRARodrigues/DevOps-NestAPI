@@ -4,7 +4,10 @@ on:
   push:
     branches: 
       - main
-
+permissions: 
+  id-token: write
+  contents: read
+  
 jobs: 
   build:
     name: 'Build and Push'
@@ -27,11 +30,22 @@ jobs:
       - run: npm i
       - run: npm run test
 
-      - name: Login into container registry
-        uses: docker/login-action@v4.6.0
-        with:
-          username: ${{vars.DOCKERHUB_USERNAME}}  
-          password: ${{secrets.DOCKERHUB_TOKEN}}  
+      # - name: Login into container registry
+      #   uses: docker/login-action@v4.6.0
+      #   with:
+      #     username: ${{vars.DOCKERHUB_USERNAME}}  
+      #     password: ${{secrets.DOCKERHUB_TOKEN}}  
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with: 
+          role-to-assume: ${{secrets.AWS_ECR_ROLE_ARN}}
+          aws-region: ${{secrets.AWS_REGION}}
+          
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2    
+
       - name: Get commit tag 
         id: get_tag    
         run: |
@@ -44,8 +58,8 @@ jobs:
       # - name: Push docker image
       #   run: docker push gabrielrarodrigues/devops-nest-api:${{steps.get_tag.outputs.sha}}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v7.3.0
-        with:
-          push: true
-          tags: gabrielrarodrigues/devops-nest-api:${{steps.get_tag.outputs.sha}},gabrielrarodrigues/devops-nest-api:latest
+      # - name: Build and push Docker image
+      #   uses: docker/build-push-action@v7.3.0
+      #   with:
+      #     push: true
+      #     tags: gabrielrarodrigues/devops-nest-api:${{steps.get_tag.outputs.sha}},gabrielrarodrigues/devops-nest-api:latest
