@@ -53,13 +53,27 @@ jobs:
           echo "sha=$SHA" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
+        id: build-docker-image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           TAG: ${{ steps.get_tag.outputs.sha }}
         run: |
           docker build -t $REGISTRY/devops-nest-api:$TAG .
           docker push $REGISTRY/devops-nest-api:$TAG
+          IMAGE=$(echo $REGISTRY/devops-nest-api:$TAG)
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
 
+      - name: Deploy to App Runner
+        id: deploy-apprunner
+        uses: awslabs/amazon-app-runner-deploy@main    
+        with:
+          service: devops-nest-api
+          image: ${{steps.build-docker-image.outputs.image}}
+          access-role-arn: ${{secrets.AWS_APP_RUNNER_ROLE}}
+          region: ${{secrets.AWS_REGION}}
+          cpu: 1
+          memory: 2
+          port: 3000
 
       # - name: Build and push Docker image
       #   uses: docker/build-push-action@v7.3.0
