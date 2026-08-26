@@ -69,7 +69,7 @@ jobs:
         with:
           service: devops-nest-api
           image: ${{steps.build-docker-image.outputs.image}}
-          access-role-arn: ${{secrets.AWS_APP_RUNNER_ROLE}}
+          access-role-arn: ${{secrets.AWS_APP_RUNNER_ROLE_ARN}}
           region: ${{secrets.AWS_REGION}}
           cpu: 1
           memory: 2
