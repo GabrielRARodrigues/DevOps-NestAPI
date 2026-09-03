@@ -67,7 +67,7 @@ jobs:
         run: |
           docker build -t $REGISTRY/${{vars.SERVICE_NAME}}:$TAG .
           docker tag $REGISTRY/${{vars.SERVICE_NAME}}:$TAG $REGISTRY/${{vars.SERVICE_NAME}}:latest
-          docker push --all-tags $REGISTRY/${{vars.SERVICE_NAME}}:
+          docker push --all-tags $REGISTRY/${{vars.SERVICE_NAME}}
           IMAGE=$(echo $REGISTRY/${{vars.SERVICE_NAME}}:$TAG)
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
 
